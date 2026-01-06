@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: laravel-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: laravel-app
+  template:
+    metadata:
+      labels:
+        app: laravel-app
+    spec:
+      containers:
+      - name: laravel-app
+        image: laravel-first-crud-app:latest  # Doit être identique au nom du docker build
+        imagePullPolicy: Never
+        env:
+        - name: DB_CONNECTION
+          value: "mysql"
+        - name: DB_HOST
+          value: "mysql"
+        - name: DB_PORT
+          value: "3306"
+        - name: DB_DATABASE
+          value: "db"
+        - name: DB_USERNAME
+          value: "root"
+        - name: DB_PASSWORD
+          value: "root"
+        - name: APP_KEY
+          value: base64:j72FhwuZKO2S/wsgKBaayu0gj2xRynd5FvfKx+0h7d4=
+        - name: APP_DEBUG
+          value: "true"
+        - name: APP_ENV
+          value: local
+        ports:
+        - containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: laravel-service
+spec:
+  type: NodePort
+  selector:
+    app: laravel-app
+  ports:
+    - port: 80
+      targetPort: 8000
+      nodePort: 30001

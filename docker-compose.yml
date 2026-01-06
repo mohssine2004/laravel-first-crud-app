@@ -1,0 +1,48 @@
+version: '3.8'
+services:
+  laravel-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: laravel-first-crud-app:latest
+    container_name: laravel-app-compose
+    restart: unless-stopped
+    ports:
+      - "8080:8000"
+    environment:
+      APP_NAME: "Laravel"
+      APP_ENV: local
+      APP_KEY: "base64:j72FhwuZKO2S/wsgKBaayu0gj2xRynd5FvfKx+0h7d4="
+      APP_DEBUG: "true"
+      APP_URL: "http://localhost:8080"
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: db
+      DB_USERNAME: root
+      DB_PASSWORD: root
+    depends_on:
+      - mysql
+    networks:
+      - laravel-network
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-compose
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: db
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3388:3306"
+    networks:
+      - laravel-network
+    volumes:
+      - db-data:/var/lib/mysql
+
+networks:
+  laravel-network:
+    driver: bridge
+
+volumes:
+  db-data:
